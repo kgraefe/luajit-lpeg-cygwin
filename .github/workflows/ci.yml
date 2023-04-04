@@ -39,8 +39,14 @@ jobs:
         timeout-minutes: 5
       - name: Load variables from the cygport file
         run: |
-          eval "$(cygport luajit-lpeg.cygport vars PVR)"
+          eval "$(cygport luajit-lpeg.cygport vars BUILD_REQUIRES PVR)"
+          printf 'BUILD_REQUIRES=%s\n' "$BUILD_REQUIRES" >>"$GITHUB_ENV"
           printf 'PVR=%s\n' "$PVR" >>"$GITHUB_ENV"
+      - name: Install Cygwin build requirements
+        uses: cygwin/cygwin-install-action@v2
+        with:
+          packages: ${{ env.BUILD_REQUIRES }}
+        timeout-minutes: 30
       - name: Install luajit{-devel}
         run: |
           v=2.1.0-beta3-20230221-1
