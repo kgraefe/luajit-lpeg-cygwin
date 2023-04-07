@@ -39,9 +39,10 @@ jobs:
         timeout-minutes: 5
       - name: Load variables from the cygport file
         run: |
-          eval "$(cygport luajit-lpeg.cygport vars BUILD_REQUIRES PVR)"
+          eval "$(cygport luajit-lpeg.cygport vars BUILD_REQUIRES PVR ARCH)"
           printf 'BUILD_REQUIRES=%s\n' "$BUILD_REQUIRES" >>"$GITHUB_ENV"
           printf 'PVR=%s\n' "$PVR" >>"$GITHUB_ENV"
+          printf 'ARCH=%s\n' "$ARCH" >>"$GITHUB_ENV"
       - name: Install build requirements
         uses: cygwin/cygwin-install-action@v4
         with:
@@ -69,25 +70,22 @@ jobs:
       - name: Cygport package
         run: cygport luajit-lpeg.cygport package
         timeout-minutes: 5
-      - name: Tar up build results
-        if: always()
-        run: tar -caf luajit-lpeg-build-results.txz luajit-lpeg-*-*.*/
-        timeout-minutes: 10
+      - name: Tar up dist directory
+        run: |
+          cd luajit-lpeg-$PVR.$ARCH/dist
+          tar -cJvaf luajit-lpeg-dist-$PVR.$ARCH.tar.xz luajit-lpeg/
       - name: Store build results
-        if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: build-results
-          path: luajit-lpeg-build-results.txz
+          name: luajit-lpeg-dist-${{ env.PVR }}.${{ env.ARCH }}.tar.xz
+          path: luajit-lpeg-${{ env.PVR }}.${{ env.ARCH }}/dist/luajit-lpeg-dist-${{ env.PVR }}.${{ env.ARCH }}.tar.xz
           if-no-files-found: error
         timeout-minutes: 5
       - name: Release
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            luajit-lpeg-${{ env.PVR }}.x86_64/dist/luajit-lpeg/luajit-lpeg-${{ env.PVR }}.tar.xz
-            luajit-lpeg-${{ env.PVR }}.x86_64/dist/luajit-lpeg/luajit-lpeg-${{ env.PVR }}-src.tar.xz
-            luajit-lpeg-${{ env.PVR }}.x86_64/dist/luajit-lpeg/luajit-lpeg-debuginfo/luajit-lpeg-debuginfo-${{ env.PVR }}.tar.xz
+          fail_on_unmatched_files: true
+          files: luajit-lpeg-${{ env.PVR }}.${{ env.ARCH }}/dist/luajit-lpeg-dist-${{ env.PVR }}.${{ env.ARCH }}.tar.xz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
