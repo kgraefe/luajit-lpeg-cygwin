@@ -11,7 +11,7 @@ SRC_URI="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-${VERSION}.tar.gz"
 SRC_DIR="lpeg-${VERSION}"
 
 DEPEND="luajit"
-BUILD_REQUIRES="pkg-config"
+BUILD_REQUIRES="pkg-config luajit luajit-devel"
 
 LUA_CFLAGS=$(pkg-config --cflags luajit)
 LUA_LIBS=$(pkg-config --libs luajit)
