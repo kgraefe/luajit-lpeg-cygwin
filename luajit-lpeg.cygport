@@ -6,6 +6,7 @@ SUMMARY="Lua Parsing Expression Grammars extension (for luajit)"
 DESCRIPTION="LPeg is a pattern-matching library for Lua, based on Parsing
 Expression Grammars (PEGs)."
 HOMEPAGE="http://www.inf.puc-rio.br/~roberto/lpeg/"
+LICENSE="MIT"
 SRC_URI="http://www.inf.puc-rio.br/~roberto/lpeg/lpeg-${VERSION}.tar.gz"
 SRC_DIR="lpeg-${VERSION}"
 
